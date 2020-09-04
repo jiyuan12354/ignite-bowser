@@ -49,7 +49,7 @@ export const expo = {
     return {
       exitCode: expoInstall.status,
       version: `expo-cli@${expoVersion}`,
-      template: "ignite-bowser",
+      template: "ignite-pru-ignite-bowser",
     }
   },
 }

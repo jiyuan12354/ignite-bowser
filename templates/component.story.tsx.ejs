@@ -4,7 +4,7 @@ import { StoryScreen, Story, UseCase } from "../../../storybook/views"
 import { color } from "../../theme"
 import { <%= props.pascalName %> } from "./<%= props.kebabCaseName %>"
 
-storiesOf("<%= props.pascalName %>", module)
+storiesOf(<%= props.pascalName %>.name, module)
   .addDecorator(fn => <StoryScreen>{fn()}</StoryScreen>)
   .add("Style Presets", () => (
     <Story>

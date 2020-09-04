@@ -13,36 +13,33 @@ export const run = async function(toolbox: GluegunToolbox) {
     return
   }
 
-  let observer = parameters.options.observer
-  if (parameters.options.observer === undefined) {
-    observer = await prompt.confirm(
-      `Should this component be _observed_ by Mobx?\n${print.colors.gray(`
-
-      If you'll be passing any mobx-state-tree objects in this component's props
-      and dereferencing them within this component, you'll want the component wrapped
-      in \`observer\` so that the component rerenders when properties of the object change.
-
-      If all props will be simple values or objects that don't come from a mobx store,
-      you don't need the component to be wrapped in \`observer\`.
-
-      `)}`,
-    )
-  }
-
   const name = parameters.first
   const pascalName = pascalCase(name)
   const camelCaseName = camelCase(name)
   const kebabCaseName = kebabCase(name)
-  const props = { camelCaseName, kebabCaseName, name, observer, pascalName }
+  const props = { camelCaseName, kebabCaseName, name, undefined, pascalName }
+  let genPath = "common"
+  if (parameters.options && parameters.options.module) {
+    const isCorrectModlue = await prompt.confirm(
+      `You do want to generate a ${parameters.options.module} component?\n${print.colors.gray(`
 
+      you can generate a componnet in you particular path by provider an optional module parameter.
+
+      `)}`,
+      true,
+    )
+    if (isCorrectModlue) {
+      genPath = parameters.options.module
+    }
+  }
   const jobs = [
     {
       template: "component.story.tsx.ejs",
-      target: `app/components/${kebabCaseName}/${kebabCaseName}.story.tsx`,
+      target: `app/components/${genPath}/${kebabCaseName}/${kebabCaseName}.story.tsx`,
     },
     {
       template: "component.tsx.ejs",
-      target: `app/components/${kebabCaseName}/${kebabCaseName}.tsx`,
+      target: `app/components/${genPath}/${kebabCaseName}/${kebabCaseName}.tsx`,
     },
   ]
 
@@ -50,7 +47,7 @@ export const run = async function(toolbox: GluegunToolbox) {
 
   // patch the barrel export file
   const barrelExportPath = `${process.cwd()}/app/components/index.ts`
-  const exportToAdd = `export * from "./${kebabCaseName}/${kebabCaseName}"\n`
+  const exportToAdd = `export * from "./${genPath}/${kebabCaseName}/${kebabCaseName}"\n`
 
   if (!filesystem.exists(barrelExportPath)) {
     const msg =
@@ -64,6 +61,6 @@ export const run = async function(toolbox: GluegunToolbox) {
   // wire up example
   await patching.prepend(
     "./storybook/storybook-registry.ts",
-    `require("../app/components/${kebabCaseName}/${kebabCaseName}.story")\n`,
+    `require("../app/components/${genPath}/${kebabCaseName}/${kebabCaseName}.story")\n`,
   )
 }

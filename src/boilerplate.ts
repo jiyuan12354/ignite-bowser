@@ -303,7 +303,8 @@ And here: https://guides.cocoapods.org/using/getting-started.html
 
     ignite.log("adding boilerplate to project for generator commands")
 
-    const boilerplate = parameters.options.b || parameters.options.boilerplate || "ignite-bowser"
+    const boilerplate =
+      parameters.options.b || parameters.options.boilerplate || "ignite-pru-ignite-bowser"
     const isIgniteInstalled = await system.which(`ignite`)
     const igniteCommand = isIgniteInstalled ? "ignite" : "npx ignite-cli"
     await system.exec(`${igniteCommand} add ${boilerplate} ${debugFlag}`)
